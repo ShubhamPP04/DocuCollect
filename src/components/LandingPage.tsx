@@ -2,6 +2,7 @@ import { useState } from 'react';
 import AuthComponent from './Auth';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DocumentTextIcon, LockClosedIcon, DevicePhoneMobileIcon, FolderOpenIcon } from '@heroicons/react/24/solid';
+import { Session } from '@supabase/supabase-js';
 
 export default function LandingPage() {
   const [showLogin, setShowLogin] = useState(false);
