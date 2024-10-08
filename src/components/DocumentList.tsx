@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import DocumentUpload from './DocumentUpload';
+import Image from 'next/image';
 
 interface Document {
   id: number;
@@ -136,7 +137,7 @@ export default function DocumentList() {
                   >
                     <div className="w-full h-20 sm:h-24 flex items-center justify-center mb-2">
                       {getFileType(doc.file_url) === 'image' ? (
-                        <img src={doc.file_url} alt={doc.name} className="w-full h-full object-cover rounded" />
+                        <Image src={doc.file_url} alt={doc.name} width={100} height={100} className="w-full h-full object-cover rounded" />
                       ) : (
                         getFileIcon(doc.file_url)
                       )}

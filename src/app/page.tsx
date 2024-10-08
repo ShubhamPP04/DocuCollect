@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTheme } from 'next-themes';
 import { supabase } from '../lib/supabase';
 import LandingPage from '../components/LandingPage';
 import DocumentList from '../components/DocumentList';
@@ -11,7 +10,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Home() {
   const [session, setSession] = useState<any>(null);
-  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [activeSection, setActiveSection] = useState<'documents' | 'notes'>('documents');
 

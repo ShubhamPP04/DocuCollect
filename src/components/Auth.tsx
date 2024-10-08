@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { motion } from 'framer-motion';
@@ -16,7 +18,7 @@ export default function AuthComponent() {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
     } catch (error) {
-      setError(error.message);
+      setError(error instanceof Error ? error.message : 'An unknown error occurred');
     } finally {
       setLoading(false);
     }
@@ -37,10 +39,10 @@ export default function AuthComponent() {
         alert('Check your email for the confirmation link!');
       }
     } catch (error) {
-      if (error.message.includes("cannot be used")) {
+      if (error instanceof Error && error.message.includes("cannot be used")) {
         setError("This email address is not authorized. Please use an approved email or contact the administrator. If you're the project owner, check your Supabase authentication settings.");
       } else {
-        setError(error.message);
+        setError(error instanceof Error ? error.message : 'An unknown error occurred');
       }
     } finally {
       setLoading(false);

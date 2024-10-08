@@ -175,7 +175,7 @@ export default function Notes() {
       <div className="bg-white dark:bg-black shadow-sm rounded-lg p-4">
         <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">Your Notes</h2>
         {notes.length === 0 ? (
-          <p className="text-gray-600 dark:text-gray-400">You haven't added any notes yet.</p>
+          <p className="text-gray-600 dark:text-gray-400">You haven&apos;t added any notes yet.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {notes.map((note) => (
