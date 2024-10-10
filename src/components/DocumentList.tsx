@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import DocumentUpload from './DocumentUpload';
-import { Document, Page, pdfjs } from 'react-pdf';
+import { Document, pdfjs } from 'react-pdf';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -97,9 +97,14 @@ export default function DocumentList() {
       const { data: userData, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
 
-      // Delete the file from storage if it's an offline document
-      if (fileUrl.includes(supabase.storageUrl)) {
-        const filePath = fileUrl.split('/').slice(-2).join('/');
+      // Check if the file is stored in Supabase storage
+      const { data: publicUrlData } = supabase.storage
+        .from('documents')
+        .getPublicUrl('');
+      
+      if (fileUrl.startsWith(publicUrlData.publicUrl)) {
+        // Extract the file path from the URL
+        const filePath = fileUrl.replace(publicUrlData.publicUrl, '');
         const { error: deleteStorageError } = await supabase.storage
           .from('documents')
           .remove([filePath]);
