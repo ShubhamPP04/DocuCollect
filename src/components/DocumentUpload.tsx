@@ -7,7 +7,8 @@ interface Document {
   name: string;
   file_url: string;
   created_at: string;
-  user_id1: string;  // Changed from user_id to user_id1
+  user_id1: string;
+  is_offline: boolean;
 }
 
 interface DocumentUploadProps {
@@ -18,6 +19,7 @@ export default function DocumentUpload({ onDocumentAdded }: DocumentUploadProps)
   const [link, setLink] = useState('');
   const [name, setName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -27,31 +29,62 @@ export default function DocumentUpload({ onDocumentAdded }: DocumentUploadProps)
       const { data: userData, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
 
+      let fileUrl = '';
+      if (file) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `${userData.user.id}/${fileName}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('documents') // Make sure this matches your bucket name
+          .upload(filePath, file);
+
+        if (uploadError) {
+          console.error('Upload error details:', uploadError);
+          throw uploadError;
+        }
+
+        const { data: publicUrlData } = supabase.storage
+          .from('documents') // Make sure this matches your bucket name
+          .getPublicUrl(filePath);
+
+        fileUrl = publicUrlData.publicUrl;
+        console.log('Uploaded file URL:', fileUrl); // Add this line
+
+      }
+
       const { data, error } = await supabase
         .from('documents')
         .insert({ 
           name: name, 
-          file_url: link,
-          user_id1: userData.user.id  // Changed from user_id to user_id1
+          file_url: fileUrl || link,
+          user_id1: userData.user.id,
+          is_offline: !!file
         })
         .select()
         .single();
 
       if (error) throw error;
 
+      console.log('Document added:', data); // Add this line
+
       onDocumentAdded(data as Document);
-      alert('Document link added successfully!');
+      alert('Document added successfully!');
       setLink('');
       setName('');
+      setFile(null);
     } catch (error: unknown) {
-      console.error('Error adding document link:', error);
+      console.error('Error adding document:', error);
+      if (error instanceof Error) {
+        console.error('Error details:', error.message, error.stack);
+      }
       let errorMessage = 'Unknown error';
       if (error instanceof Error) {
         errorMessage = error.message;
       } else if (typeof error === 'string') {
         errorMessage = error;
       }
-      alert(`Error adding document link: ${errorMessage}`);
+      alert(`Error adding document: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -76,8 +109,20 @@ export default function DocumentUpload({ onDocumentAdded }: DocumentUploadProps)
           />
         </div>
         <div>
+          <label htmlFor="file" className="block text-sm font-medium text-black dark:text-gray-300 mb-1">
+            Upload PDF
+          </label>
+          <input
+            type="file"
+            id="file"
+            accept=".pdf"
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
+            className="w-full px-3 py-2 rounded-md border-black dark:border-gray-700 shadow-sm focus:border-black dark:focus:border-white focus:ring focus:ring-black dark:focus:ring-white focus:ring-opacity-50 bg-white dark:bg-black text-black dark:text-white text-sm sm:text-base"
+          />
+        </div>
+        <div>
           <label htmlFor="link" className="block text-sm font-medium text-black dark:text-gray-300 mb-1">
-            Google Drive Link
+            Or Enter Google Drive Link
           </label>
           <input
             type="url"
@@ -85,7 +130,6 @@ export default function DocumentUpload({ onDocumentAdded }: DocumentUploadProps)
             value={link}
             onChange={(e) => setLink(e.target.value)}
             className="w-full px-3 py-2 rounded-md border-black dark:border-gray-700 shadow-sm focus:border-black dark:focus:border-white focus:ring focus:ring-black dark:focus:ring-white focus:ring-opacity-50 bg-white dark:bg-black text-black dark:text-white text-sm sm:text-base"
-            required
             placeholder="Paste Google Drive link"
           />
         </div>
