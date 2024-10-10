@@ -15,9 +15,13 @@ export default function Home() {
 
   useEffect(() => {
     setMounted(true);
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    
+    const fetchSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
-    });
+    };
+
+    fetchSession();
 
     const {
       data: { subscription },
