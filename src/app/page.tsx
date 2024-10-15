@@ -10,18 +10,6 @@ import Notes from '../components/Notes';
 import ThemeToggle from '../components/ThemeToggle';
 import { motion, AnimatePresence } from 'framer-motion';
 
-if (typeof Promise.withResolvers === 'undefined') {
-  Promise.withResolvers = function <T>() {
-    let resolve!: (value: T | PromiseLike<T>) => void;
-    let reject!: (reason?: any) => void;
-    const promise = new Promise<T>((res, rej) => {
-      resolve = res;
-      reject = rej;
-    });
-    return { promise, resolve, reject };
-  };
-}
-
 export default function Home() {
   const [session, setSession] = useState<any>(null);
   const [mounted, setMounted] = useState(false);
