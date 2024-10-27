@@ -42,7 +42,7 @@ export default function ProfilePage() {
 
   const fetchProfile = async (userId: string) => {
     try {
-      let { data, error } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
@@ -64,14 +64,16 @@ export default function ProfilePage() {
           .single();
 
         if (insertError) throw insertError;
-        data = newProfile;
+        setProfile(newProfile);
+        if (newProfile?.avatar_url) setAvatar(newProfile.avatar_url);
+        if (newProfile?.full_name) setNewName(newProfile.full_name);
       } else if (error) {
         throw error;
+      } else {
+        setProfile(data);
+        if (data?.avatar_url) setAvatar(data.avatar_url);
+        if (data?.full_name) setNewName(data.full_name);
       }
-
-      setProfile(data);
-      if (data?.avatar_url) setAvatar(data.avatar_url);
-      if (data?.full_name) setNewName(data.full_name);
     } catch (error) {
       console.error('Error fetching/creating profile:', error);
     }
