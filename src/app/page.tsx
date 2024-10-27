@@ -9,6 +9,7 @@ import DocumentList from '../components/DocumentList';
 import Notes from '../components/Notes';
 import ThemeToggle from '../components/ThemeToggle';
 import { motion, AnimatePresence } from 'framer-motion';
+import ProfileIcon from '../components/ProfileIcon';
 
 export default function Home() {
   const [session, setSession] = useState<any>(null);
@@ -64,7 +65,7 @@ export default function Home() {
         className="min-h-screen bg-white dark:bg-black text-black dark:text-white"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-          <header className="bg-white dark:bg-black shadow-sm rounded-lg p-4 sm:p-6 mb-6 flex flex-col sm:flex-row justify-between items-center">
+          <header className="bg-white dark:bg-black shadow-sm rounded-[30px] p-4 sm:p-6 mb-6 flex flex-col sm:flex-row justify-between items-center">
             <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-0">DocuCollect</h1>
             <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
               <div className="flex space-x-2">
@@ -72,7 +73,7 @@ export default function Home() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setActiveSection('documents')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition duration-300 ${
+                  className={`px-4 py-2 rounded-[30px] text-sm font-medium transition duration-300 ${
                     activeSection === 'documents'
                       ? 'bg-black dark:bg-white text-white dark:text-black'
                       : 'bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-gray-700'
@@ -84,7 +85,7 @@ export default function Home() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setActiveSection('notes')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition duration-300 ${
+                  className={`px-4 py-2 rounded-[30px] text-sm font-medium transition duration-300 ${
                     activeSection === 'notes'
                       ? 'bg-black dark:bg-white text-white dark:text-black'
                       : 'bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-gray-700'
@@ -95,10 +96,11 @@ export default function Home() {
               </div>
               <div className="flex items-center space-x-2">
                 <ThemeToggle />
+                <ProfileIcon />
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition duration-300"
+                  className="bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-[30px] text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition duration-300"
                   onClick={() => supabase.auth.signOut()}
                 >
                   Sign Out
