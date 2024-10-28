@@ -33,9 +33,7 @@
   "devDependencies": {
     "@cloudflare/next-on-pages": "^1.13.5",
     "eslint": "^8",
-    "eslint-config-next": "14.2.14",
-    "netlify-cli": "^17.36.4",
-    "netlify-plugin-next-on-pages": "^1.13.5"
+    "eslint-config-next": "14.2.14"
   },
   "engines": {
     "node": ">=20.0.0"
