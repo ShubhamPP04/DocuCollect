@@ -45,7 +45,9 @@ export default function ResetPassword() {
       alert('Password updated successfully! Please sign in with your new password.');
       router.push('/');
       
-    } catch (error) {
+    } catch (err) {
+      // Fix the TypeScript error by properly typing the error
+      const error = err as Error;
       setError(error.message);
     } finally {
       setLoading(false);
