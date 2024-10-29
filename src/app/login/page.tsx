@@ -25,9 +25,9 @@ export default function LoginPage() {
 
       if (error) throw error;
       
-      // Show success message or handle accordingly
       alert('Check your email for the login link!');
-    } catch (error) {
+    } catch (err) {
+      const error = err as Error;
       setError(error.message);
     } finally {
       setLoading(false);
@@ -47,7 +47,8 @@ export default function LoginPage() {
       });
 
       if (error) throw error;
-    } catch (error) {
+    } catch (err) {
+      const error = err as Error;
       setError(error.message);
     } finally {
       setLoading(false);
