@@ -9,6 +9,9 @@ interface Document {
   created_at: string;
   user_id1: string;
   is_offline: boolean;
+  is_uploaded: boolean;
+  file_type: string;
+  is_favorite: boolean;
 }
 
 interface DocumentUploadProps {
