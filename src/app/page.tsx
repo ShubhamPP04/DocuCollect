@@ -16,12 +16,24 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [activeSection, setActiveSection] = useState<'documents' | 'notes'>('documents');
 
+  const handleSignOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      setSession(null); // Clear session immediately
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
   useEffect(() => {
     setMounted(true);
     
     const fetchSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
+      if (session?.user?.email_confirmed_at) {
+        setSession(session);
+      }
     };
 
     fetchSession();
@@ -29,7 +41,9 @@ export default function Home() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
+      if (session?.user?.email_confirmed_at) {
+        setSession(session);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -101,7 +115,7 @@ export default function Home() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-[30px] text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition duration-300"
-                  onClick={() => supabase.auth.signOut()}
+                  onClick={handleSignOut}
                 >
                   Sign Out
                 </motion.button>

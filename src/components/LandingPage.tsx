@@ -4,24 +4,69 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import Image from 'next/image';
-import AuthComponent from './Auth';
+import Link from 'next/link';
 
 export default function LandingPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [showLogin, setShowLogin] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
 
-  const handleLogin = async () => {
+  const handleAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-      if (error) throw error;
+      setError(null);
+      
+      if (isForgotPassword) {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        
+        if (error) throw error;
+        
+        alert('Check your email for the password reset link!');
+        setIsForgotPassword(false);
+        setEmail('');
+        setShowLogin(false);
+        return;
+      }
+      
+      if (isSignUp) {
+        const { error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
+            data: {
+              password: password
+            }
+          },
+        });
+        
+        if (signUpError) throw signUpError;
+
+        setEmail('');
+        setPassword('');
+        setShowLogin(false);
+        setIsSignUp(false);
+        
+        setTimeout(() => {
+          alert('Please check your email for the verification link to complete signup!');
+        }, 300);
+        
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) throw error;
+      }
     } catch (error) {
-      console.error('Error logging in:', error);
+      setError(error.message);
     } finally {
       setLoading(false);
     }
@@ -145,7 +190,7 @@ export default function LandingPage() {
                 </div>
                 <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
                   <svg className="w-6 h-6 text-blue-400" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2z"/>
+                    <path fill="currentColor" d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/>
                   </svg>
                 </div>
               </div>
@@ -154,147 +199,6 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Features Section */}
-      <section className="py-20 bg-white dark:bg-black">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-black dark:text-white mb-4">
-              Everything you need in one place
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300">
-              Streamline your workflow with our powerful features
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Feature Cards */}
-            <motion.div
-              whileHover={{ y: -10 }}
-              className="bg-white dark:bg-gray-800 p-6 rounded-[30px] shadow-lg"
-            >
-              <div className="bg-blue-100 dark:bg-blue-900 w-12 h-12 rounded-2xl flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-black dark:text-white mb-2">Smart Documents</h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Organize and access your documents intelligently with advanced sorting and filtering.
-              </p>
-            </motion.div>
-
-            <motion.div
-              whileHover={{ y: -10 }}
-              className="bg-white dark:bg-gray-800 p-6 rounded-[30px] shadow-lg"
-            >
-              <div className="bg-green-100 dark:bg-green-900 w-12 h-12 rounded-2xl flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-black dark:text-white mb-2">Quick Notes</h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Capture ideas instantly and organize them effortlessly with our intuitive note-taking system.
-              </p>
-            </motion.div>
-
-            <motion.div
-              whileHover={{ y: -10 }}
-              className="bg-white dark:bg-gray-800 p-6 rounded-[30px] shadow-lg"
-            >
-              <div className="bg-purple-100 dark:bg-purple-900 w-12 h-12 rounded-2xl flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-black dark:text-white mb-2">Custom Workflows</h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Create personalized workflows that match your unique way of working.
-              </p>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-20 bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="bg-white dark:bg-gray-800 p-8 rounded-[30px] shadow-lg"
-            >
-              <h3 className="text-4xl font-bold text-black dark:text-white mb-2">100+</h3>
-              <p className="text-gray-600 dark:text-gray-300">Integrations</p>
-            </motion.div>
-
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="bg-white dark:bg-gray-800 p-8 rounded-[30px] shadow-lg"
-            >
-              <h3 className="text-4xl font-bold text-black dark:text-white mb-2">50K+</h3>
-              <p className="text-gray-600 dark:text-gray-300">Active Users</p>
-            </motion.div>
-
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="bg-white dark:bg-gray-800 p-8 rounded-[30px] shadow-lg"
-            >
-              <h3 className="text-4xl font-bold text-black dark:text-white mb-2">99.9%</h3>
-              <p className="text-gray-600 dark:text-gray-300">Uptime</p>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            className="bg-black dark:bg-white text-white dark:text-black p-12 rounded-[30px] text-center"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Ready to get started?
-            </h2>
-            <p className="text-lg mb-8 text-gray-300 dark:text-gray-700">
-              Join thousands of users who are already boosting their productivity.
-            </p>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setShowLogin(true)}
-              className="bg-white dark:bg-black text-black dark:text-white px-8 py-4 rounded-[30px] text-lg font-medium hover:bg-gray-100 dark:hover:bg-gray-900 transition duration-300"
-            >
-              Start for free
-            </motion.button>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-8 border-t border-gray-200 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="flex items-center space-x-4">
-              <span className="text-2xl font-bold text-black dark:text-white">DocuCollect</span>
-              <span className="text-gray-500 dark:text-gray-400">© 2024</span>
-            </div>
-            <div className="flex items-center space-x-6">
-              <a href="#" className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition duration-300">
-                Privacy Policy
-              </a>
-              <a href="#" className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition duration-300">
-                Terms of Service
-              </a>
-              <a href="#" className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition duration-300">
-                Contact
-              </a>
-            </div>
-          </div>
-        </div>
-      </footer>
-
       {/* Login Modal */}
       <AnimatePresence>
         {showLogin && (
@@ -302,29 +206,175 @@ export default function LandingPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 flex min-h-screen bg-black z-50"
           >
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white dark:bg-black p-6 rounded-[30px] max-w-md w-full shadow-2xl"
-            >
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-black dark:text-white">
-                  Welcome Back
-                </h2>
-                <button
-                  onClick={() => setShowLogin(false)}
-                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            {/* Left Section - Branding */}
+            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+              {/* Background Pattern */}
+              <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-black">
+                <div className="absolute inset-0 opacity-10">
+                  <svg className="h-full w-full" viewBox="0 0 100 100">
+                    <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+                      <path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" strokeWidth="0.5"/>
+                    </pattern>
+                    <rect width="100" height="100" fill="url(#grid)"/>
                   </svg>
-                </button>
+                </div>
               </div>
-              <AuthComponent />
-            </motion.div>
+
+              {/* Content */}
+              <div className="relative w-full flex flex-col justify-between p-12">
+                {/* Logo and Brand */}
+                <div>
+                  <Link href="/" className="text-2xl font-bold text-white">
+                    DocuCollect
+                  </Link>
+                </div>
+
+                {/* Testimonial */}
+                <div className="space-y-6">
+                  <p className="text-xl md:text-2xl text-white font-medium leading-relaxed">
+                    "This library has saved me countless hours of work and helped me deliver stunning designs to my clients faster than ever before."
+                  </p>
+                  <div className="flex items-center space-x-3">
+                    <div className="h-10 w-10 rounded-full bg-gray-800 flex items-center justify-center">
+                      <span className="text-white font-medium">SD</span>
+                    </div>
+                    <div>
+                      <p className="text-white font-medium">Sofia Davis</p>
+                      <p className="text-gray-400 text-sm">Product Designer</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Stats */}
+                <div className="grid grid-cols-3 gap-8">
+                  <div>
+                    <p className="text-3xl font-bold text-white">100+</p>
+                    <p className="text-gray-400">Components</p>
+                  </div>
+                  <div>
+                    <p className="text-3xl font-bold text-white">50k+</p>
+                    <p className="text-gray-400">Users</p>
+                  </div>
+                  <div>
+                    <p className="text-3xl font-bold text-white">99.9%</p>
+                    <p className="text-gray-400">Uptime</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Section - Login Form */}
+            <div className="w-full lg:w-1/2 p-8 flex items-center justify-center">
+              <div className="max-w-md w-full space-y-8">
+                {/* Mobile Logo */}
+                <div className="lg:hidden text-center mb-8">
+                  <Link href="/" className="text-2xl font-bold text-white">
+                    DocuCollect
+                  </Link>
+                </div>
+
+                <div className="space-y-6">
+                  <button
+                    onClick={() => setShowLogin(false)}
+                    className="absolute top-4 right-4 text-gray-400 hover:text-white"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+
+                  <div>
+                    <h1 className="text-3xl font-bold text-white">
+                      {isSignUp ? 'Create an account' : 'Welcome back'}
+                    </h1>
+                    <p className="mt-2 text-gray-400">
+                      {isSignUp ? 'Enter your details below' : 'Enter your details to sign in'}
+                    </p>
+                  </div>
+
+                  <form onSubmit={handleAuth} className="space-y-4">
+                    <div>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="name@example.com"
+                        className="w-full px-4 py-3 rounded-md bg-black border border-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent"
+                        required
+                      />
+                    </div>
+                    {!isForgotPassword && (
+                      <div>
+                        <input
+                          type="password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          placeholder="Password"
+                          className="w-full px-4 py-3 rounded-md bg-black border border-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent"
+                          required
+                        />
+                      </div>
+                    )}
+                    
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      type="submit"
+                      disabled={loading}
+                      className="w-full px-4 py-3 bg-white text-black rounded-md font-medium hover:bg-gray-100 transition duration-300"
+                    >
+                      {loading ? 'Loading...' : (isForgotPassword ? 'Send Reset Link' : (isSignUp ? 'Sign Up' : 'Sign In'))}
+                    </motion.button>
+                  </form>
+
+                  <div className="mt-6 text-center space-y-4">
+                    {!isForgotPassword && (
+                      <button
+                        onClick={() => setIsSignUp(!isSignUp)}
+                        className="text-sm text-gray-400 hover:text-white transition duration-300"
+                      >
+                        {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
+                      </button>
+                    )}
+                    
+                    <button
+                      onClick={() => {
+                        setIsForgotPassword(!isForgotPassword);
+                        setError(null);
+                        setPassword('');
+                      }}
+                      className="block w-full text-sm text-gray-400 hover:text-white transition duration-300"
+                    >
+                      {isForgotPassword ? 'Back to login' : 'Forgot your password?'}
+                    </button>
+                  </div>
+
+                  {error && (
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="mt-4 text-red-500 text-sm text-center"
+                    >
+                      {error}
+                    </motion.p>
+                  )}
+
+                  <p className="mt-6 text-sm text-gray-500 text-center">
+                    By clicking continue, you agree to our{' '}
+                    <Link href="/terms" className="text-white hover:underline">
+                      Terms of Service
+                    </Link>{' '}
+                    and{' '}
+                    <Link href="/privacy" className="text-white hover:underline">
+                      Privacy Policy
+                    </Link>
+                    .
+                  </p>
+                </div>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

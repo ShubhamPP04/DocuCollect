@@ -17,6 +17,7 @@ export default function Notes() {
   const [newNote, setNewNote] = useState({ title: '', content: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchNotes();
@@ -111,6 +112,11 @@ export default function Notes() {
     }
   }
 
+  const filteredNotes = notes.filter(note => 
+    note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    note.content.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   if (isLoading) {
     return <div className="text-center text-lg sm:text-xl text-black dark:text-white">Loading your notes...</div>;
   }
@@ -172,13 +178,38 @@ export default function Notes() {
         </form>
       </div>
 
+      <div className="relative max-w-md mx-auto">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search notes..."
+          className="w-full px-4 py-2 pl-10 pr-4 bg-white/10 dark:bg-white/5 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-[30px] focus:outline-none focus:ring-2 focus:ring-white/30 dark:focus:ring-white/20 text-black dark:text-white placeholder-gray-500 dark:placeholder-gray-400 shadow-sm transition-all duration-200"
+        />
+        <svg
+          className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500"
+          width="16"
+          height="16"
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M8.5 3a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 8.5a6.5 6.5 0 1111.436 4.23l3.857 3.857a.75.75 0 11-1.061 1.061l-3.857-3.857A6.5 6.5 0 012 8.5z"
+            fill="currentColor"
+          />
+        </svg>
+      </div>
+
       <div className="bg-white dark:bg-black shadow-sm rounded-lg p-4">
         <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">Your Notes</h2>
         {notes.length === 0 ? (
           <p className="text-gray-600 dark:text-gray-400">You haven&apos;t added any notes yet.</p>
+        ) : filteredNotes.length === 0 ? (
+          <p className="text-gray-600 dark:text-gray-400">No notes found matching your search.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {notes.map((note) => (
+            {filteredNotes.map((note) => (
               <motion.div
                 key={note.id}
                 initial={{ opacity: 0, y: 20 }}

@@ -53,13 +53,16 @@ export default function DocumentUpload({ onDocumentAdded }: DocumentUploadProps)
 
       }
 
+      const fileType = getFileType(file.name);
       const { data, error } = await supabase
         .from('documents')
         .insert({ 
           name: name, 
           file_url: fileUrl || link,
           user_id1: userData.user.id,
-          is_offline: !!file
+          is_offline: !!file,
+          is_uploaded: true,
+          file_type: fileType
         })
         .select()
         .single();
