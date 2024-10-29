@@ -234,7 +234,7 @@ export default function LandingPage() {
                 {/* Testimonial */}
                 <div className="space-y-6">
                   <p className="text-xl md:text-2xl text-white font-medium leading-relaxed">
-                    "This library has saved me countless hours of work and helped me deliver stunning designs to my clients faster than ever before."
+                    &ldquo;This library has saved me countless hours of work and helped me deliver stunning designs to my clients faster than ever before.&rdquo;
                   </p>
                   <div className="flex items-center space-x-3">
                     <div className="h-10 w-10 rounded-full bg-gray-800 flex items-center justify-center">
