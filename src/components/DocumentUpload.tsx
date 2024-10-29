@@ -9,7 +9,6 @@ interface Document {
   created_at: string;
   user_id1: string;
   is_offline: boolean;
-  is_uploaded: boolean;
   file_type: string;
   is_favorite: boolean;
 }
@@ -24,6 +23,26 @@ export default function DocumentUpload({ onDocumentAdded }: DocumentUploadProps)
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [file, setFile] = useState<File | null>(null);
 
+  const getFileType = (fileName: string): string => {
+    const extension = fileName.split('.').pop()?.toLowerCase();
+    switch (extension) {
+      case 'pdf':
+        return 'pdf';
+      case 'doc':
+      case 'docx':
+        return 'doc';
+      case 'jpg':
+      case 'jpeg':
+        return 'jpg';
+      case 'png':
+        return 'png';
+      case 'gif':
+        return 'gif';
+      default:
+        return 'unknown';
+    }
+  };
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsSubmitting(true);
@@ -34,62 +53,82 @@ export default function DocumentUpload({ onDocumentAdded }: DocumentUploadProps)
 
       let fileUrl = '';
       if (file) {
+        console.log('File details:', {
+          name: file.name,
+          size: file.size,
+          type: file.type
+        });
+
         const fileExt = file.name.split('.').pop();
         const fileName = `${Math.random()}.${fileExt}`;
         const filePath = `${userData.user.id}/${fileName}`;
         
-        const { error: uploadError } = await supabase.storage
-          .from('documents') // Make sure this matches your bucket name
+        const { error: uploadError, data: uploadData } = await supabase.storage
+          .from('documents')
           .upload(filePath, file);
 
         if (uploadError) {
-          console.error('Upload error details:', uploadError);
+          console.error('Storage upload error:', uploadError);
           throw uploadError;
         }
 
+        console.log('Upload successful:', uploadData);
+
         const { data: publicUrlData } = supabase.storage
-          .from('documents') // Make sure this matches your bucket name
+          .from('documents')
           .getPublicUrl(filePath);
 
         fileUrl = publicUrlData.publicUrl;
-        console.log('Uploaded file URL:', fileUrl); // Add this line
-
+        console.log('File URL:', fileUrl);
       }
 
-      const fileType = getFileType(file.name);
-      const { data, error } = await supabase
+      if (!name) throw new Error('Document name is required');
+      if (!fileUrl && !link) throw new Error('Either file or link is required');
+
+      const fileType = file ? getFileType(file.name) : 'unknown';
+      
+      const { data, error: insertError } = await supabase
         .from('documents')
         .insert({ 
           name: name, 
           file_url: fileUrl || link,
           user_id1: userData.user.id,
           is_offline: !!file,
-          is_uploaded: true,
-          file_type: fileType
+          file_type: fileType,
+          is_favorite: false
         })
         .select()
         .single();
 
-      if (error) throw error;
+      if (insertError) {
+        console.error('Database insert error:', insertError);
+        throw insertError;
+      }
 
-      console.log('Document added:', data); // Add this line
-
-      onDocumentAdded(data as Document);
-      alert('Document added successfully!');
+      console.log('Document added successfully:', data);
+      onDocumentAdded(data);
       setLink('');
       setName('');
       setFile(null);
-    } catch (error: unknown) {
+
+    } catch (error) {
       console.error('Error adding document:', error);
+      
       if (error instanceof Error) {
-        console.error('Error details:', error.message, error.stack);
+        console.error('Error details:', {
+          message: error.message,
+          stack: error.stack,
+          name: error.name
+        });
       }
+
       let errorMessage = 'Unknown error';
       if (error instanceof Error) {
         errorMessage = error.message;
-      } else if (typeof error === 'string') {
-        errorMessage = error;
+      } else if (typeof error === 'object' && error !== null) {
+        errorMessage = JSON.stringify(error);
       }
+
       alert(`Error adding document: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);

@@ -13,7 +13,6 @@ interface Document {
   created_at: string;
   user_id1: string;
   is_offline: boolean;
-  is_uploaded: boolean;
   file_type: string;
   is_favorite: boolean;
 }
@@ -186,11 +185,9 @@ export default function DocumentList() {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.8 }}
       whileHover={{ scale: 1.05 }}
-      className={`${
-        doc.is_uploaded 
-          ? 'bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30'
-          : 'bg-white dark:bg-gray-800'
-      } rounded-lg p-4 flex flex-col items-center justify-center relative shadow-sm hover:shadow-md transition-shadow duration-200`}
+      className={`
+        bg-white dark:bg-gray-800
+        rounded-lg p-4 flex flex-col items-center justify-center relative shadow-sm hover:shadow-md transition-shadow duration-200`}
     >
       {/* Action Buttons - Top Right */}
       <div className="absolute top-2 right-2 flex space-x-2">

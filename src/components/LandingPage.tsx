@@ -36,18 +36,19 @@ export default function LandingPage() {
       }
       
       if (isSignUp) {
-        const { error: signUpError } = await supabase.auth.signUp({
+        const { data, error: signUpError } = await supabase.auth.signUp({
           email,
           password,
           options: {
             emailRedirectTo: `${window.location.origin}/auth/callback`,
-            data: {
-              password: password
-            }
           },
         });
         
         if (signUpError) throw signUpError;
+
+        if (data?.user?.identities?.length === 0) {
+          throw new Error('This email is already registered. Please sign in instead.');
+        }
 
         setEmail('');
         setPassword('');
@@ -65,8 +66,10 @@ export default function LandingPage() {
         });
         if (error) throw error;
       }
-    } catch (error) {
-      setError(error.message);
+    } catch (err) {
+      console.error('Auth error:', err);
+      const error = err as Error;
+      setError(error.message || 'An error occurred during authentication');
     } finally {
       setLoading(false);
     }
