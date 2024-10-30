@@ -75,6 +75,28 @@ export default function LandingPage() {
     }
   };
 
+  const handleSocialLogin = async (provider: 'google' | 'github') => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (error) throw error;
+    } catch (err) {
+      console.error('Social login error:', err);
+      const error = err as Error;
+      setError(error.message || 'An error occurred during social login');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-black">
       {/* Navbar */}
@@ -199,6 +221,72 @@ export default function LandingPage() {
               </div>
             </motion.div>
           </motion.div>
+        </div>
+      </div>
+
+      {/* Testimonials Section */}
+      <div className="bg-gray-100 dark:bg-gray-900 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-center text-black dark:text-white mb-8">What our users are saying</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg"
+            >
+              <p className="text-gray-600 dark:text-gray-300 mb-4">
+                "DocuCollect has transformed the way I manage my tasks. It's intuitive and efficient!"
+              </p>
+              <div className="flex items-center space-x-3">
+                <div className="h-10 w-10 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center">
+                  <span className="text-white font-medium">JD</span>
+                </div>
+                <div>
+                  <p className="text-black dark:text-white font-medium">John Doe</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">Product Manager</p>
+                </div>
+              </div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg"
+            >
+              <p className="text-gray-600 dark:text-gray-300 mb-4">
+                "I love how easy it is to integrate with other tools. It has made my workflow seamless."
+              </p>
+              <div className="flex items-center space-x-3">
+                <div className="h-10 w-10 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center">
+                  <span className="text-white font-medium">AS</span>
+                </div>
+                <div>
+                  <p className="text-black dark:text-white font-medium">Alice Smith</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">Software Engineer</p>
+                </div>
+              </div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg"
+            >
+              <p className="text-gray-600 dark:text-gray-300 mb-4">
+                "The best task management tool I've used. Highly recommend it to everyone!"
+              </p>
+              <div className="flex items-center space-x-3">
+                <div className="h-10 w-10 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center">
+                  <span className="text-white font-medium">MK</span>
+                </div>
+                <div>
+                  <p className="text-black dark:text-white font-medium">Michael King</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">Designer</p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </div>
 
@@ -331,6 +419,61 @@ export default function LandingPage() {
                       {loading ? 'Loading...' : (isForgotPassword ? 'Send Reset Link' : (isSignUp ? 'Sign Up' : 'Sign In'))}
                     </motion.button>
                   </form>
+
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-800"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                      <span className="px-2 bg-black text-gray-500">
+                        OR CONTINUE WITH
+                      </span>
+                    </div>
+                  </div>
+
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleSocialLogin('google')}
+                    disabled={loading}
+                    className="w-full px-4 py-3 bg-black border border-gray-800 text-white rounded-md font-medium hover:bg-gray-900 transition duration-300 flex items-center justify-center space-x-2"
+                  >
+                    <svg className="w-5 h-5" viewBox="0 0 24 24">
+                      <path
+                        fill="currentColor"
+                        d="M21.35 11.1h-9.18v2.72h5.32c-.23 1.24-.92 2.28-1.95 2.97v2.48h3.14c1.84-1.7 2.91-4.2 2.91-7.17 0-.47-.04-.93-.12-1.38z"
+                      />
+                      <path
+                        fill="currentColor"
+                        d="M12.17 22c2.48 0 4.56-.82 6.08-2.22l-3.14-2.48c-.87.58-1.95.93-3.14.93-2.42 0-4.47-1.64-5.2-3.85H3.5v2.42C5.01 19.8 8.35 22 12.17 22z"
+                      />
+                      <path
+                        fill="currentColor"
+                        d="M6.97 13.38c-.2-.58-.31-1.2-.31-1.83s.11-1.25.31-1.83V7.3H3.5C2.82 8.65 2.5 10.27 2.5 12s.32 3.35 1 4.7l3.47-2.32z"
+                      />
+                      <path
+                        fill="currentColor"
+                        d="M12.17 4.75c1.34 0 2.54.46 3.48 1.36l2.58-2.58C16.73 2.1 14.65 1.25 12.17 1.25 8.35 1.25 5.01 3.45 3.5 6.3l3.47 2.42c.73-2.21 2.78-3.97 5.2-3.97z"
+                      />
+                    </svg>
+                    <span>Google</span>
+                  </motion.button>
+
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleSocialLogin('github')}
+                    disabled={loading}
+                    className="w-full px-4 py-3 bg-black border border-gray-800 text-white rounded-md font-medium hover:bg-gray-900 transition duration-300 flex items-center justify-center space-x-2"
+                  >
+                    <svg className="w-5 h-5" viewBox="0 0 24 24">
+                      <path
+                        fill="currentColor"
+                        d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385c.6.105.825-.255.825-.57c0-.285-.015-1.23-.015-2.235c-3.015.555-3.795-.735-4.035-1.41c-.135-.345-.72-1.41-1.23-1.695c-.42-.225-1.02-.78-.015-.795c.945-.015 1.62.87 1.845 1.23c1.08 1.815 2.805 1.305 3.495.99c.105-.78.42-1.305.765-1.605c-2.67-.3-5.46-1.335-5.46-5.925c0-1.305.465-2.385 1.23-3.225c-.12-.3-.54-1.53.12-3.18c0 0 1.005-.315 3.3 1.23c.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23c.66 1.65.24 2.88.12 3.18c.765.84 1.23 1.905 1.23 3.225c0 4.605-2.805 5.625-5.475 5.925c.435.375.81 1.095.81 2.22c0 1.605-.015 2.895-.015 3.3c0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"
+                      />
+                    </svg>
+                    <span>GitHub</span>
+                  </motion.button>
 
                   <div className="mt-6 text-center space-y-4">
                     {!isForgotPassword && (
