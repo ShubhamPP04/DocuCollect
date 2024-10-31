@@ -75,6 +75,42 @@ export default function LandingPage() {
     }
   };
 
+  const features = [
+    {
+      title: "Smart Document Management",
+      description: "Organize and access your documents intelligently with advanced sorting and filtering.",
+      icon: (
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      )
+    },
+    {
+      title: "Quick Notes",
+      description: "Take and organize notes effortlessly alongside your documents.",
+      icon: (
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg>
+      )
+    },
+    {
+      title: "Secure Storage",
+      description: "Your documents are encrypted and safely stored in the cloud.",
+      icon: (
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+      )
+    }
+  ];
+
+  const stats = [
+    { number: "100+", label: "File Types" },
+    { number: "50k+", label: "Active Users" },
+    { number: "99.9%", label: "Uptime" }
+  ];
+
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-black">
       {/* Navbar */}
@@ -201,6 +237,278 @@ export default function LandingPage() {
           </motion.div>
         </div>
       </div>
+
+      {/* Features Section */}
+      <section className="py-20 bg-white dark:bg-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-black dark:text-white mb-4">
+              Everything you need in one place
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300">
+              Streamline your workflow with our powerful features
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {features.map((feature, index) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.2 }}
+                className="bg-white dark:bg-gray-800 p-6 rounded-[30px] shadow-lg"
+              >
+                <div className="bg-black dark:bg-white w-12 h-12 rounded-2xl flex items-center justify-center mb-4 text-white dark:text-black">
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-semibold text-black dark:text-white mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300">
+                  {feature.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-20 bg-black dark:bg-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            {stats.map((stat, index) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.2 }}
+                className="space-y-2"
+              >
+                <h3 className="text-4xl font-bold text-white">{stat.number}</h3>
+                <p className="text-gray-400">{stat.label}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            className="bg-black dark:bg-white text-white dark:text-black p-12 rounded-[30px] text-center"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Ready to get started?
+            </h2>
+            <p className="text-lg mb-8 text-gray-300 dark:text-gray-700">
+              Join thousands of users who are already boosting their productivity.
+            </p>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowLogin(true)}
+              className="bg-white dark:bg-black text-black dark:text-white px-8 py-4 rounded-[30px] text-lg font-medium hover:bg-gray-100 dark:hover:bg-gray-900 transition duration-300"
+            >
+              Start for free
+            </motion.button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="py-20 bg-white dark:bg-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-black dark:text-white mb-4">
+              How It Works
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300">
+              Get started in three simple steps
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                step: "01",
+                title: "Sign Up",
+                description: "Create your account in seconds"
+              },
+              {
+                step: "02",
+                title: "Upload Documents",
+                description: "Easily upload and organize your files"
+              },
+              {
+                step: "03",
+                title: "Access Anywhere",
+                description: "Access your documents from any device"
+              }
+            ].map((item, index) => (
+              <motion.div
+                key={item.step}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.2 }}
+                viewport={{ once: true }}
+                className="relative"
+              >
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  className="bg-white dark:bg-gray-800 p-8 rounded-[30px] shadow-lg relative z-10"
+                >
+                  <span className="text-6xl font-bold text-black/5 dark:text-white/5 absolute -top-4 -left-2">
+                    {item.step}
+                  </span>
+                  <h3 className="text-xl font-semibold text-black dark:text-white mb-4">
+                    {item.title}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    {item.description}
+                  </p>
+                </motion.div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-20 bg-black dark:bg-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-white mb-4">
+              What Our Users Say
+            </h2>
+            <p className="text-lg text-gray-400">
+              Join thousands of satisfied users
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                quote: "The best document management solution I've ever used.",
+                author: "Sarah Johnson",
+                role: "Product Manager"
+              },
+              {
+                quote: "Incredibly intuitive and powerful. A game-changer for our team.",
+                author: "Michael Chen",
+                role: "Tech Lead"
+              },
+              {
+                quote: "Streamlined our workflow and boosted productivity.",
+                author: "Emily Davis",
+                role: "Creative Director"
+              }
+            ].map((testimonial, index) => (
+              <motion.div
+                key={testimonial.author}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ delay: index * 0.2 }}
+                viewport={{ once: true }}
+                whileHover={{ y: -10 }}
+                className="bg-gray-900 dark:bg-black p-6 rounded-[30px] shadow-lg"
+              >
+                <svg className="w-8 h-8 text-gray-500 mb-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+                </svg>
+                <p className="text-gray-300 dark:text-gray-400 mb-4">
+                  {testimonial.quote}
+                </p>
+                <div className="flex items-center">
+                  <div className="flex-1">
+                    <h4 className="text-white font-medium">
+                      {testimonial.author}
+                    </h4>
+                    <p className="text-gray-500">
+                      {testimonial.role}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-12 border-t border-gray-200 dark:border-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <h3 className="text-lg font-semibold text-black dark:text-white mb-4">
+                DocuCollect
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300">
+                Making document management simple and efficient.
+              </p>
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold text-black dark:text-white mb-4">
+                Product
+              </h4>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="#features" className="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">
+                    Features
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#pricing" className="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">
+                    Pricing
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold text-black dark:text-white mb-4">
+                Company
+              </h4>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="/about" className="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">
+                    About
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">
+                    Contact
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold text-black dark:text-white mb-4">
+                Legal
+              </h4>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="/privacy" className="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">
+                    Privacy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/terms" className="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white">
+                    Terms
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-gray-200 dark:border-gray-800 mt-8 pt-8 text-center">
+            <p className="text-gray-600 dark:text-gray-300">
+              © {new Date().getFullYear()} DocuCollect. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
 
       {/* Login Modal */}
       <AnimatePresence>

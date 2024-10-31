@@ -1,32 +1,23 @@
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { cookies } from 'next/headers';
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
-  const supabase = createMiddlewareClient({ req, res });
+  const supabase = createMiddlewareClient({ cookies });
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  // Refresh session if exists
-  if (session) {
-    await supabase.auth.refreshSession();
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    return res;
+  } catch (error) {
+    console.error('Middleware error:', error);
+    return res;
   }
-
-  return res;
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public (public files)
-     */
     '/((?!_next/static|_next/image|favicon.ico|public).*)',
   ],
 }; 

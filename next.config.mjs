@@ -4,24 +4,20 @@ const nextConfig = {
   swcMinify: true,
   images: {
     domains: [
-      'qfqyiabucvpfhznalqne.supabase.co',
-      `${process.env.NEXT_PUBLIC_SUPABASE_URL?.replace('https://', '')}`
+      process.env.NEXT_PUBLIC_SUPABASE_URL?.replace('https://', '').split('.')[0] + '.supabase.co'
     ],
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**.supabase.co',
-        port: '',
-        pathname: '/storage/v1/object/public/**',
-      },
-    ],
+    unoptimized: true
   },
   typescript: {
-    ignoreBuildErrors: true, // Only use during development
+    ignoreBuildErrors: true,
   },
   eslint: {
-    ignoreDuringBuilds: true, // Only use during development
+    ignoreDuringBuilds: true,
   },
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: ['framer-motion']
+  }
 };
 
 export default nextConfig;
